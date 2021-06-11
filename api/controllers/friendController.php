@@ -61,21 +61,21 @@
             }
 
         }
-    }
 
-    if (isset($_GET['action']) && $_GET['action'] == 'delete'){
+        if (isset($_GET['action']) && $_GET['action'] == 'delete'){
 
-        $deleteFriend = new Friend($db);
-        $data = json_decode(file_get_contents("php://input"));
-
-        $deleteFriend->id_friendship = $data->id_friendship;
-
-        if ($deleteFriend->deleteFriend()) {
-            echo '{"result": "Delete success"}';
-        } else {
-            echo '{"result": "Delete fail"}';
+            $deleteFriend = new Friend($db);
+            $data = json_decode(file_get_contents("php://input"));
+    
+            $deleteFriend->id_friendship = $data->id_friendship;
+    
+            if ($deleteFriend->deleteFriend()) {
+                echo '{"result": "Delete success"}';
+            } else {
+                echo '{"result": "Delete fail"}';
+            }
+    
         }
-
     }
 
 ?>
