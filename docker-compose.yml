@@ -1,0 +1,39 @@
+version: '3'
+services:
+    api:
+        container_name: srvback
+        image: nginx:latest
+        ports:
+            - "81:81"
+        volumes:
+            - ./nginx_1.conf:/etc/nginx/conf.d/nginx.conf
+            - ./api:/api
+    web:
+        container_name: srvfront
+        image: nginx:latest
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx_2.conf:/etc/nginx/conf.d/nginx.conf
+            - ./app:/app
+    php:
+        build: 
+            context: .
+            dockerfile: PHP.Dockerfile
+        volumes:
+            - ./app:/app
+            - ./api:/api
+    mysql:
+        container_name: mysql_back
+        image: mariadb:latest
+        environment:
+            MARIADB_ROOT_PASSWORD: 'indigitall.2021'
+            MARIADB_USER: 'indi_master'
+            MARIADB_PASSWORD: 'indi_master.2021'
+            MARIADB_DATABASE: 'indigitall'
+        volumes:
+            - mysqldata:/var/lib/mysql
+        ports:
+            - 3306:3306
+volumes:
+    mysqldata: {}
