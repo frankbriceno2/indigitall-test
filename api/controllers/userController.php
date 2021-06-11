@@ -4,9 +4,18 @@
     include_once('../ddbb/DBConnection.php');
     //Call model
     include_once('../models/userModel.php');
+    //Call model Log
+    include_once('../models/logModel.php');
 
     $database = new Database();
     $db = $database->getConnection();
+     
+    define("ERROR_LOG", "E");
+    define("INFO_LOG", "I");
+    
+    $log = new Log("../log/log.txt");
+    
+    $log->writeLine(INFO_LOG, "User service access");
 
     if ($_SERVER['REQUEST_METHOD'] == 'GET'){
 
@@ -36,11 +45,13 @@
                     array_push($usersArr['body'], $e);
                 }
                 echo json_encode($usersArr);
+                $log->writeLine(INFO_LOG, "Response sent");
             } else {
                 http_response_code(404);
                 echo json_encode(
                     array("message" => "No record found.")
                 );
+                $log->writeLine(ERROR_LOG, "Something went wrong");
             }
         } else {
 
@@ -63,11 +74,13 @@
 
                 http_response_code(200);
                 echo json_encode($user_arr);
+                $log->writeLine(INFO_LOG, "Response sent");
             } else {
                 http_response_code(404);
                 echo json_encode(
                     array("message" => "No record found.")
                 );
+                $log->writeLine(ERROR_LOG, "Something went wrong");
             }
 
         }
@@ -88,9 +101,13 @@
             $newUser->longitude = $data->longitude;
 
             if ($newUser->createUser()) {
+                http_response_code(200);
                 echo '{"result": "insert success"}';
+                $log->writeLine(INFO_LOG, "Response sent");
             } else {
+                http_response_code(404);
                 echo '{"result": "insert fail"}';
+                $log->writeLine(ERROR_LOG, "Something went wrong");
             }
         }
 
@@ -107,9 +124,13 @@
             $updateUser->updated_at = date('Y-m-d H:i:s');
 
             if ($updateUser->updateUser()) {
+                http_response_code(200);
                 echo '{"result": "update success"}';
+                $log->writeLine(INFO_LOG, "Response sent");
             } else {
+                http_response_code(404);
                 echo '{"result": "update fail"}';
+                $log->writeLine(ERROR_LOG, "Something went wrong");
             }
 
         }
@@ -122,12 +143,18 @@
             $deleteUser->id_user = $data->id_user;
 
             if ($deleteUser->deleteUser()) {
+                http_response_code(200);
                 echo '{"result": "Delete success"}';
+                $log->writeLine(INFO_LOG, "Response sent");
             } else {
+                http_response_code(404);
                 echo '{"result": "Delete fail"}';
+                $log->writeLine(ERROR_LOG, "Something went wrong");
             }
 
         }
+
+        $log->close();
 
     }
 

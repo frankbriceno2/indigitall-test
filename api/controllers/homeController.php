@@ -4,6 +4,16 @@
 include_once('../ddbb/DBConnection.php');
 //Call specific model
 include_once('../models/homeModel.php');
+//Call model Log
+include_once('../models/logModel.php');
+
+define("ERROR_LOG", "E");
+define("INFO_LOG", "I");
+    
+$log = new Log("../log/log.txt");
+    
+$log->writeLine(INFO_LOG, "Home service access");
+
 //validate http method
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     
@@ -31,11 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             );
             array_push($usersArr['body'], $e);
         }
+        http_response_code(200);
         echo json_encode($usersArr);
+        $log->writeLine(INFO_LOG, "Response sent");
     } else {
         http_response_code(404);
         echo json_encode(
             array("message" => "No record found.")
         );
+        $log->writeLine(ERROR_LOG, "Something went wrong");
     }
 }
+$log->close();

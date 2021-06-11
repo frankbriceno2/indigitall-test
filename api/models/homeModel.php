@@ -1,5 +1,4 @@
 <?php
-
     class Home {
         //Connection
         private $conn;

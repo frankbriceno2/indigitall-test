@@ -3,9 +3,18 @@
     include_once('../ddbb/DBConnection.php');
     //Call model
     include_once('../models/friendModel.php');
+    //Call model Log
+    include_once('../models/logModel.php');
 
     $database = new Database();
     $db = $database->getConnection();
+
+    define("ERROR_LOG", "E");
+    define("INFO_LOG", "I");
+    
+    $log = new Log("../log/log.txt");
+    
+    $log->writeLine(INFO_LOG, "Friend service access");
 
     if ($_SERVER['REQUEST_METHOD'] == 'GET'){
 
@@ -34,12 +43,15 @@
                     );
                     array_push($friendsArr['body'], $e);
                 }
+                http_response_code(200);
                 echo json_encode($friendsArr);
+                $log->writeLine(INFO_LOG, "Response sent");
             } else {
                 http_response_code(404);
                 echo json_encode(
                     array("message" => "No record found.")
                 );
+                $log->writeLine(ERROR_LOG, "Something went wrong");
             }
         }
     }
@@ -55,9 +67,13 @@
             $addFriend->id_user_friend = $data->id_user_friend;
 
             if ($addFriend->addFriend()) {
+                http_response_code(200);
                 echo '{"result": "Add success"}';
+                $log->writeLine(INFO_LOG, "Response sent");
             } else {
+                http_response_code(404);
                 echo '{"result": "Add fail"}';
+                $log->writeLine(ERROR_LOG, "Something went wrong");
             }
 
         }
@@ -70,12 +86,18 @@
             $deleteFriend->id_friendship = $data->id_friendship;
     
             if ($deleteFriend->deleteFriend()) {
+                http_response_code(200);
                 echo '{"result": "Delete success"}';
+                $log->writeLine(INFO_LOG, "Response sent");
             } else {
+                http_response_code(404);
                 echo '{"result": "Delete fail"}';
+                $log->writeLine(ERROR_LOG, "Something went wrong");
             }
     
         }
     }
+
+    $log->close();
 
 ?>
